@@ -1,3 +1,231 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -eu -o pipefail
 
-echo 'Hello, World!'
+##
+# Get your new GS&F laptop set up
+# Last updated 2017-04-27
+# Contributors:
+#   Blake Knight <oss.ideas@gmail.com> (http://blakek.me)
+##
+
+##
+# Note, if adding things to this list, try to only add things that
+# are generally useful to a large percentage of the team without
+# installing things that several people on the team don't want.
+##
+
+# Atom packages & plugins to be installed.
+# These are installed using `apm install ${packageName}`
+apmInstall='
+atom-ternjs
+autocomplete-paths
+docblockr
+editorconfig
+language-babel
+language-nunjucks
+language-postcss
+linter
+linter-eslint
+linter-stylelint
+pigments
+sort-lines
+toggle-quotes
+'
+
+# These install binaries (using Homebrew cask install scripts).
+# The first portion of each string is the brew cask name, and the second is the
+# directory to check before installing the cask
+# These are installed using `brew cask install ${packageName}`
+brewCaskInstall='
+atom|/Applications/Atom.app
+docker|/Applications/Docker.app
+firefox|/Applications/Firefox*.app
+google-chrome|/Applications/Google Chrome*.app
+kitematic|/Applications/Kitematic*.app
+slack|/Applications/Slack.app
+sequel-pro|/Applications/Sequel Pro.app
+sublime-text|/Applications/Sublime Text*.app
+virtualbox|/Applications/VirtualBox.app
+'
+
+# These are installed using `brew install ${packageName}`
+brewInstall='
+n
+'
+
+npmInstallGlobal='
+serve
+'
+
+# Colors
+reset='\e[0m'
+white='\e[1;37m'
+black='\e[0;30m'
+blue='\e[0;34m'
+light_blue='\e[1;34m'
+green='\e[0;32m'
+light_green='\e[1;32m'
+cyan='\e[0;36m'
+light_cyan='\e[1;36m'
+red='\e[0;31m'
+light_red='\e[1;31m'
+purple='\e[0;35m'
+light_purple='\e[1;35m'
+brown='\e[0;33m'
+yellow='\e[1;33m'
+gray='\e[0;30m'
+light_gray='\e[0;37m'
+
+# Formats
+bold='\e[1m'
+italic='\e[3m'
+underline='\e[4m'
+strikethrough='\e[9m'
+
+# Colorful print functions
+pheader() { printf "\n$underline$@$reset\n"; }
+pokay() { printf "$green$@$reset\n"; }
+pinfo() { printf "$blue$@$reset\n"; }
+pwarn() { printf "$yellow$@$reset\n"; }
+perror() { printf "$red$@$reset\n"; }
+piheader() { printf "$underline$@$reset"; }
+piokay() { printf "$green$@$reset"; }
+piinfo() { printf "$blue$@$reset"; }
+piwarn() { printf "$yellow$@$reset"; }
+pierror() { printf "$red$@$reset"; }
+
+# Checks to see if a program can be found in the PATH
+is_installed() {
+	type -p "$@" 2> /dev/null && return 0 || {
+		type_list=$(echo "$@" | sed 's/ /, /g')
+		pwarn "$type_list not found" && return 1
+	}
+}
+
+# Installs Homebrew (http://brew.sh/) for OS X
+install_brew() {
+	pinfo 'Installing Homebrew'
+	ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+	brew doctor
+}
+
+caskInstaller() {
+	piinfo "$1: "
+
+	if stat -f '' "${@:2}" 2>/dev/null; then
+		echo "${@:2}"
+	else
+		pwarn 'not found'
+		pinfo "Installing $1..."
+		brew cask install $1
+	fi
+}
+
+atomInstallPackages() {
+	if [[ $(is_installed apm) ]]; then
+		for package in $apmInstall; do
+			if [[ ! -d "${HOME}/.atom/packages/${package}" ]]; then
+				apm install $package
+			else
+				printf "%s already installed ${green}✓${reset}\n" $package
+			fi
+		done
+	else
+		pwarn 'apm not found.  Opening Atom and re-running this will probably solve this.'
+	fi
+}
+
+homebrewCaskInstallBinaries() {
+	SYSIFS=$IFS
+	IFS=$'\n'
+	for b in ${brewCaskInstall[@]}; do
+		OIFS=$IFS
+		IFS='|'
+
+		caskInstaller ${b[@]}
+
+		IFS=$OIFS
+	done
+	IFS=$SYSIFS
+}
+
+homebrewInstallPackages() {
+	for b in $brewInstall; do
+		piinfo "$b: "
+
+		is_installed $b || {
+			pinfo "Installing $b..."
+			brew install "$b"
+		}
+	done
+}
+
+npmInstallPackages() {
+	for b in $npmInstallGlobal; do
+		piinfo "$b: "
+
+		is_installed $b || {
+			pinfo "Installing $b..."
+			npm install -g "$b"
+		}
+	done
+}
+
+nodeSetup() {
+	pinfo 'Installing/switching to latest Node.js and npm for setup'
+	n latest
+
+	is_installed yarn || {
+		pinfo 'Installing Yarn'
+		brew install yarn
+	}
+
+	pinfo 'Installing/switching to latest *stable* Node.js and npm for development'
+	n stable
+}
+
+main() {
+	if [[ $(uname -s) != "Darwin" ]]; then
+		perror 'This script was written for OS X'
+		exit 1
+	fi
+
+	pheader 'Gathering essentials...'
+
+	# Install Xcode
+	piinfo 'Checking for macOS command line tools: '
+	xcode-select -p || xcode-select --install 2>/dev/null
+
+	# If Homebrew isn't installed, let's get it
+	piinfo 'Checking for Homebrew (http://brew.sh/): '
+	is_installed brew || install_brew
+
+	# Setup Homebrew to install common binaries
+	piinfo 'Checking for Homebrew Casks (http://caskroom.io/): '
+	brew cask --version || brew install caskroom/cask/brew-cask
+
+	piinfo 'Checking for more cask versions: '
+	if [[ ! "$(brew tap)" =~ 'caskroom/versions' ]]; then
+		echo 'installing'
+		brew tap caskroom/versions
+	else
+		echo 'already tapped'
+	fi
+
+	pheader 'Installing programs using Homebrew installers...'
+	homebrewCaskInstallBinaries
+
+	pheader 'Setting up Node.js...'
+	nodeSetup
+
+	pheader 'Installing packages & plugins for Atom...'
+	atomInstallPackages
+
+	pheader 'Installing packages using homebrew...'
+	homebrewInstallPackages
+
+	pheader 'Installing packages using npm...'
+	npmInstallPackages
+}
+
+main
