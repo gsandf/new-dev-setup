@@ -28,6 +28,7 @@ linter
 linter-eslint
 linter-stylelint
 pigments
+prettier-atom
 sort-lines
 toggle-quotes
 '
