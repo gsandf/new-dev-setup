@@ -19,6 +19,11 @@
         background-color: #339;
       }
 
+	  @keyframes rainbow {
+	  	from { filter: hue-rotate(0); }
+		to { filter: hue-rotate(360deg); }
+	  }
+
       a {
         color: #fc0;
       }
@@ -31,6 +36,40 @@
         padding: 1rem 2rem;
         border-radius: 3px;
       }
+
+	  .alert {
+	  	position: absolute;
+		top: 5vh;
+		right: 5vw;
+		padding: 1em;
+		background-color: #f0c;
+		opacity: 0;
+		transition: opacity 250ms ease;
+	  }
+
+	  .alert.shown {
+		opacity: 1;
+	  }
+
+	  .btn {
+	  	font-size: 1.4rem;
+	  	background-color: #fc0;
+		color: #000;
+		border-width: 0;
+		padding: 1em 3em;
+		margin-top: 5vh;
+		letter-spacing: .1em;
+	  }
+
+	  .btn:hover {
+	  	animation: rainbow 750ms infinite linear;
+	  }
+
+	  .hidden-code {
+	  	z-index: -1;
+		position: absolute;
+		top: -100vh;
+	  }
 
       .info-container {
         display: flex;
@@ -47,9 +86,44 @@
     <section class="info-container">
       <code>bash <(curl -L 'https://raw.githubusercontent.com/gsandf/new-dev-setup/master/setup')</code>
 
+	  <textarea class="hidden-code">bash <(curl -L 'https://raw.githubusercontent.com/gsandf/new-dev-setup/master/setup')</textarea>
+
+	  <div class="alert"></div>
+
       <p>
-        Paste that at a Terminal prompt. Check out <a href="https://github.com/gsandf/new-dev-setup">gsandf/new-dev-setup</a> to see what&rsquo;s going on here.
+        Paste that at a Terminal prompt. Check out
+		<a href="https://github.com/gsandf/new-dev-setup">gsandf/new-dev-setup</a>
+		to see what&rsquo;s going on here.
       </p>
+
+	  <button onclick="javascript:copyScript()" type="button" class="btn">
+		  copy
+	  </button>
     </section>
+
+<script>
+var alertBox = document.querySelector('.alert');
+var alertClearTimer;
+var scriptBox = document.querySelector('textarea');
+
+function copyScript() {
+	scriptBox.select();
+	var copyWasSuccessful = document.execCommand('copy');
+
+	if (!copyWasSuccessful) return;
+
+	alertBox.classList.add('shown');
+	alertBox.textContent = 'Copied to clipboard!';
+
+	if (alertClearTimer) {
+		clearTimeout(alertClearTimer);
+	}
+
+	alertClearTimer = setTimeout(() => {
+		alertBox.classList.remove('shown');
+	}, 3000);
+}
+</script>
+
   </body>
 </html>
