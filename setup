@@ -19,6 +19,7 @@ set -eu -o pipefail
 apmInstall='
 atom-ternjs
 autocomplete-paths
+css-in-js
 docblockr
 editorconfig
 language-babel
