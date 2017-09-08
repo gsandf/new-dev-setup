@@ -1,0 +1,14 @@
+{
+	"name": "new-dev-setup",
+	"version": "1.0.0",
+	"main": "index.js",
+	"repository": "https://github.com/gsandf/new-dev-setup.git",
+	"author": "Randy Uebel <ruebel@gsandf.com> (http://www.gsandf.com)",
+	"license": "MIT",
+	"scripts": {
+		"start": "autoreload-server -w \"**/**.{html,css,js}\" ./docs 8008"
+	},
+	"dependencies": {
+		"simple-autoreload-server": "^0.2.7"
+	}
+}
