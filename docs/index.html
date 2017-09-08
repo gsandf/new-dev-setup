@@ -96,7 +96,7 @@
 		to see what&rsquo;s going on here.
       </p>
 
-	  <button onclick="javascript:copyScript()" type="button" class="btn">
+	  <button onclick="javascript:copyScript()" type="button" class="btn" onmouseover="javascript:startSound()" onmouseout="javascript:stopSound()">
 		  copy
 	  </button>
     </section>
@@ -124,6 +124,7 @@ function copyScript() {
 	}, 3000);
 }
 </script>
+<script src="sound.js" charset="utf-8"></script>
 
   </body>
 </html>
