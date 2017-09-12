@@ -18,6 +18,7 @@ set -eu -o pipefail
 # These are installed using `apm install ${packageName}`
 apmInstall='
 atom-ternjs
+autocomplete-modules
 autocomplete-paths
 css-in-js
 docblockr
