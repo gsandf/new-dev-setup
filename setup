@@ -103,7 +103,7 @@ is_installed() {
 	}
 }
 
-# Installs Homebrew (http://brew.sh/) for OS X
+# Installs Homebrew (http://brew.sh/)
 install_brew() {
 	pinfo 'Installing Homebrew'
 	ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
@@ -134,6 +134,18 @@ atomInstallPackages() {
 	else
 		pwarn 'apm not found.  Opening Atom and re-running this will probably solve this.'
 	fi
+}
+
+beforeAll() {
+	# Ensure running on macOS
+	if [[ $(uname -s) != "Darwin" ]]; then
+		perror 'This script was written for macOS'
+		exit 1
+	fi
+
+	pinfo 'Preparing folders for `n`...'
+	sudo mkdir /usr/local/n
+	sudo chown "$(whoami)" /usr/local/n
 }
 
 homebrewCaskInstallBinaries() {
@@ -181,15 +193,13 @@ nodeSetup() {
 		brew install yarn
 	}
 
-	pinfo 'Installing/switching to latest *stable* Node.js and npm for development'
+	pinfo 'Installing/switching to stable Node.js and npm for development'
 	n stable
 }
 
 main() {
-	if [[ $(uname -s) != "Darwin" ]]; then
-		perror 'This script was written for OS X'
-		exit 1
-	fi
+	pheader 'Initial setup'
+	beforeAll
 
 	pheader 'Gathering essentials...'
 
@@ -216,14 +226,14 @@ main() {
 	pheader 'Installing programs using Homebrew installers...'
 	homebrewCaskInstallBinaries
 
-	pheader 'Setting up Node.js...'
-	nodeSetup
-
 	pheader 'Installing packages & plugins for Atom...'
 	atomInstallPackages
 
 	pheader 'Installing packages using homebrew...'
 	homebrewInstallPackages
+
+	pheader 'Setting up Node.js...'
+	nodeSetup
 
 	pheader 'Installing packages using npm...'
 	npmInstallPackages
