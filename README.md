@@ -4,6 +4,8 @@
 
 This installs a lot of nice things (e.g. browsers, text editors, etc.) so you don’t have to.
 
+:eyes: Check out the [onboarding checklist](https://gsandf.atlassian.net/wiki/spaces/DEV/pages/95584261/Onboarding+Checklist) to see who to talk to about different things, meet different people on the team, and get an idea of what goes on each week.
+
 If there’s something you think is missing, please either [open an issue](https://github.com/gsandf/new-dev-setup/issues/new) or add it yourself and [make a pull request](https://github.com/gsandf/new-dev-setup/compare).
 
 ## Usage
