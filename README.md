@@ -2,7 +2,7 @@
 
 > Get your new GS&F laptop set up
 
-This installs a lot of nice things (e.g. browsers, text editors, etc.) so you don’t have to.
+This installs [a lot of nice things](https://github.com/gsandf/new-dev-setup/wiki/Installed-Tools) (e.g. browsers, text editors, etc.) so you don’t have to.
 
 :eyes: Check out the [onboarding checklist](https://github.com/gsandf/new-dev-setup/wiki/Onboarding-Checklist) to see who to talk to about different things, meet different people on the team, and get an idea of what goes on each week.
 
