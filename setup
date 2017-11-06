@@ -17,22 +17,28 @@ set -eu -o pipefail
 # Atom packages & plugins to be installed.
 # These are installed using `apm install ${packageName}`
 apmInstall='
-atom-ternjs
-autocomplete-modules
+atom-beautify
 autocomplete-paths
-css-in-js
 docblockr
+double-tag
 editorconfig
+emmet
+git-time-machine
 hyperclick
 js-hyperclick
 language-babel
+language-docker
+language-htaccess
+language-nginx
 language-nunjucks
 language-postcss
 linter
 linter-eslint
 linter-stylelint
 pigments
+prettier-atom
 sort-lines
+title-case
 toggle-quotes
 '
 
@@ -45,11 +51,13 @@ atom|/Applications/Atom.app
 docker|/Applications/Docker.app
 firefox|/Applications/Firefox*.app
 google-chrome|/Applications/Google Chrome*.app
+insomnia|/Applications/Insomnia.app
 kitematic|/Applications/Kitematic*.app
+mojibar|/Applications/Mojibar.app
+now|/Applications/Now.app
 slack|/Applications/Slack.app
 sequel-pro|/Applications/Sequel Pro.app
 sublime-text|/Applications/Sublime Text*.app
-virtualbox|/Applications/VirtualBox.app
 '
 
 # These are installed using `brew install ${packageName}`
