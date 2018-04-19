@@ -2,10 +2,7 @@
 set -eu -o pipefail
 
 ##
-# Get your new GS&F laptop set up
-# Last updated 2017-04-27
-# Contributors:
-#   Blake Knight <oss.ideas@gmail.com> (http://blakek.me)
+# Get your new GS&F workspace set up
 ##
 
 ##
@@ -18,29 +15,37 @@ set -eu -o pipefail
 # These are installed using `apm install ${packageName}`
 apmInstall='
 atom-beautify
-autocomplete-paths
+autocomplete-modules
+better-git-blame
 docblockr
 double-tag
 editorconfig
 emmet
 git-time-machine
+highlight-selected
 hyperclick
 js-hyperclick
 language-babel
 language-docker
+language-graphql
 language-htaccess
+language-ini
 language-nginx
 language-nunjucks
 language-postcss
 linter
 linter-eslint
 linter-stylelint
+linter-ui-default
 pigments
 prettier-atom
+set-syntax
 sort-lines
+teletype
 title-case
 toggle-quotes
 '
+
 
 # These install binaries (using Homebrew cask install scripts).
 # The first portion of each string is the brew cask name, and the second is the
@@ -50,14 +55,13 @@ brewCaskInstall='
 atom|/Applications/Atom.app
 docker|/Applications/Docker.app
 firefox|/Applications/Firefox*.app
-google-chrome|/Applications/Google Chrome*.app
+google-chrome|/Applications/Google\ Chrome*.app
 insomnia|/Applications/Insomnia.app
 kitematic|/Applications/Kitematic*.app
 mojibar|/Applications/Mojibar.app
 now|/Applications/Now.app
 slack|/Applications/Slack.app
 sequel-pro|/Applications/Sequel Pro.app
-sublime-text|/Applications/Sublime Text*.app
 '
 
 # These are installed using `brew install ${packageName}`
@@ -153,10 +157,6 @@ beforeAll() {
 		perror 'This script was written for macOS'
 		exit 1
 	fi
-
-	pinfo 'Preparing folders for `n`...'
-	sudo mkdir /usr/local/n
-	sudo chown "$(whoami)" /usr/local/n
 }
 
 homebrewCaskInstallBinaries() {
@@ -196,16 +196,26 @@ npmInstallPackages() {
 }
 
 nodeSetup() {
-	pinfo 'Installing/switching to latest Node.js and npm for setup'
-	n latest
+	# Ensure folder for `n` exists
+	[ -d /usr/local/n ] || {
+		pinfo 'Creating folder for `n`...'
+		sudo mkdir /usr/local/n
+	}
+
+	# Ensure owner of `n` is the correct user
+	if [[ "$(stat -f '%Su' /usr/local/n)" != "$(whoami)" ]]; then
+		pinfo 'Setting '$(whoami)' as owner of `n`...'
+		sudo chown "$(whoami)" /usr/local/n
+	fi
+
+	pinfo 'Installing Node.js and npm for development'
+	n stable
 
 	is_installed yarn || {
 		pinfo 'Installing Yarn'
-		brew install yarn
+		# Node is installed by `n`, so don't install it again with brew
+		brew install yarn --without-node
 	}
-
-	pinfo 'Installing/switching to stable Node.js and npm for development'
-	n stable
 }
 
 main() {
@@ -224,7 +234,7 @@ main() {
 
 	# Setup Homebrew to install common binaries
 	piinfo 'Checking for Homebrew Casks (http://caskroom.io/): '
-	brew cask --version || brew install caskroom/cask/brew-cask
+	brew cask --version || brew tap caskroom/cask
 
 	piinfo 'Checking for more cask versions: '
 	if [[ ! "$(brew tap)" =~ 'caskroom/versions' ]]; then
