@@ -1,14 +1,39 @@
 {
-	"name": "new-dev-setup",
-	"version": "1.0.0",
-	"main": "index.js",
-	"repository": "https://github.com/gsandf/new-dev-setup.git",
-	"author": "Randy Uebel <ruebel@gsandf.com> (http://www.gsandf.com)",
-	"license": "MIT",
-	"scripts": {
-		"start": "autoreload-server -w \"**/**.{html,css,js}\" ./docs 8008"
-	},
-	"dependencies": {
-		"simple-autoreload-server": "^0.2.7"
-	}
+  "name": "new-dev-setup",
+  "version": "2.0.0",
+  "main": "dist/setup.js",
+  "module": "src/index.js",
+  "repository": "https://github.com/gsandf/new-dev-setup.git",
+  "author": "GS&F Devs <mindreactor@gsandf.com> (https://gsandf.com/)",
+  "license": "MIT",
+  "files": [
+    "src/**",
+    "dist/**"
+  ],
+  "eslintConfig": {
+    "extends": "gsandf",
+    "parser": "babel-eslint"
+  },
+  "scripts": {
+    "build": "NODE_ENV=production webpack -p",
+    "dev": "babel-node src/index.js",
+    "lint": "eslint src",
+    "prepublish": "yarn build"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.0.0",
+    "@babel/node": "^7.0.0",
+    "@babel/preset-env": "^7.0.0",
+    "babel-eslint": "^9.0.0",
+    "eslint": "^5.5.0",
+    "eslint-config-gsandf": "^1.0.0",
+    "friendly-errors-webpack-plugin": "^1.7.0",
+    "webpack": "^4.17.2",
+    "webpack-cli": "^3.1.0"
+  },
+  "dependencies": {
+    "axios": "^0.18.0",
+    "execa": "^1.0.0",
+    "signale": "^1.3.0"
+  }
 }

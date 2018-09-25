@@ -1,1 +1,16 @@
-node_modules
+# Dependencies & configuration
+node_modules/
+
+# Built code
+dist
+
+# Testing output
+.nyc_output
+coverage
+
+# Logs
+*.log
+npm-debug.*
+
+# Notes, etc.
+.scratchpad
