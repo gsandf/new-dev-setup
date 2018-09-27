@@ -15,7 +15,7 @@
     "parser": "babel-eslint"
   },
   "scripts": {
-    "build": "NODE_ENV=production webpack -p",
+    "build": "NODE_ENV=production webpack -p && pkg -o ./dist/setup -t node10-macos dist/setup.js",
     "dev": "babel-node --inspect src/index.js",
     "lint": "eslint src",
     "prepublish": "yarn build"
@@ -28,6 +28,7 @@
     "eslint": "^5.5.0",
     "eslint-config-gsandf": "^1.0.0",
     "friendly-errors-webpack-plugin": "^1.7.0",
+    "pkg": "^4.3.4",
     "webpack": "^4.17.2",
     "webpack-cli": "^3.1.0"
   },
