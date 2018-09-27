@@ -1,8 +1,12 @@
 import axios from 'axios';
 import execa from 'execa';
+import inquirer from 'inquirer';
 import os from 'os';
 import signale, { Signale } from 'signale';
 
+import execute from './execute';
+import * as packageBundles from './packages';
+import { brewInstall } from './packages/installers';
 import foundInPath from './foundInPath';
 
 const log = new Signale({ interactive: true });
@@ -20,13 +24,16 @@ async function main() {
 
   const requirements = [
     { install: installHomebrew, name: 'brew' },
-    { install: installN, name: 'n' },
+    { install: brewInstall('n'), name: 'n' },
     { install: installNode, name: 'node' }
   ];
 
+  // Run in series
   for (const requirement of requirements) {
     await installRequirement(requirement);
   }
+
+  await promptInstallPackages(packageBundles);
 
   log.star("You're good to go!");
 }
@@ -51,25 +58,10 @@ async function installHomebrew() {
 
   const installScript = response.data;
 
-  const installProcess = execa('ruby', ['-e', installScript]);
-  installProcess.stdout.pipe(process.stdout);
-  installProcess.stderr.pipe(process.stderr);
-  await installProcess;
+  return execute('ruby', ['-e', installScript]);
 }
 
-async function installN() {
-  const installProcess = execa('brew', ['install', 'n']);
-  installProcess.stdout.pipe(process.stdout);
-  installProcess.stderr.pipe(process.stderr);
-  await installProcess;
-}
-
-async function installNode() {
-  const installProcess = execa('n', ['stable']);
-  installProcess.stdout.pipe(process.stdout);
-  installProcess.stderr.pipe(process.stderr);
-  await installProcess;
-}
+const installNode = async () => execute('n', ['stable']);
 
 async function installRequirement({ name, install }) {
   log.await(`Checking for ${name}`);
@@ -81,6 +73,32 @@ async function installRequirement({ name, install }) {
   log.await(`Installing ${name}`);
   await install();
   log.success(`Installed ${name}`);
+}
+
+async function promptInstallPackages(packageBundles) {
+  const choices = Object.entries(packageBundles).reduce(
+    (allChoices, [name, packages]) => [
+      ...allChoices,
+      new inquirer.Separator('\n' + name.toUpperCase()),
+      ...packages
+    ],
+    []
+  );
+
+  const answers = await inquirer.prompt([
+    {
+      choices,
+      message: 'Select extras to install',
+      name: 'packages',
+      pageSize: 50,
+      type: 'checkbox'
+    }
+  ]);
+
+  // Run in series
+  for (const pkg of answers.packages) {
+    await installRequirement(pkg);
+  }
 }
 
 main();
