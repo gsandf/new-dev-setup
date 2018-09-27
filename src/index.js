@@ -4,7 +4,7 @@ import inquirer from 'inquirer';
 import os from 'os';
 import signale, { Signale } from 'signale';
 
-import execute from './execute';
+import { execute, executeShell } from './execute';
 import * as packageBundles from './packages';
 import { brewInstall } from './packages/installers';
 import foundInPath from './foundInPath';
@@ -24,8 +24,11 @@ async function main() {
 
   const requirements = [
     { install: installHomebrew, name: 'brew' },
+    { check: hasBrewCask, install: installHomebrewCask, name: 'brew-cask' },
+    { force: true, install: setupN, name: 'n (folder setup)' },
     { install: brewInstall('n'), name: 'n' },
-    { install: installNode, name: 'node' }
+    { install: installNode, name: 'node' },
+    { install: brewInstall('yarn', '--without-node'), name: 'yarn' }
   ];
 
   // Run in series
@@ -36,6 +39,15 @@ async function main() {
   await promptInstallPackages(packageBundles);
 
   log.star("You're good to go!");
+}
+
+async function hasBrewCask() {
+  try {
+    await execa('brew', ['cask', '--version']);
+    return true;
+  } catch (e) {
+    return false;
+  }
 }
 
 async function installCLITools() {
@@ -58,16 +70,68 @@ async function installHomebrew() {
 
   const installScript = response.data;
 
-  return execute('ruby', ['-e', installScript]);
+  await execute('ruby', ['-e', installScript]);
+
+  return executeShell(`
+    # Ensure folder for n exists
+    [ -d /usr/local/n ] || {
+      echo 'Creating folder for n at /usr/local/n'
+      echo
+      sudo mkdir /usr/local/n
+    }
+
+    # Ensure owner of n is the correct user
+    if [[ "$(stat -f '%Su' /usr/local/n)" != "$(whoami)" ]]; then
+      echo 'Setting '$(whoami)' as owner of /usr/local/n'
+      echo
+      sudo chown "$(whoami)" /usr/local/n
+    fi
+  `);
 }
+
+const installHomebrewCask = async () =>
+  executeShell(`
+    echo 'Adding Homebrew Cask (http://caskroom.io/): '
+    brew tap caskroom/cask
+
+    echo 'Checking for more cask versions: '
+    if [[ ! "$(brew tap)" =~ 'caskroom/versions' ]]; then
+      echo 'installing'
+      brew tap caskroom/versions
+    else
+      echo 'already tapped'
+    fi
+  `);
 
 const installNode = async () => execute('n', ['stable']);
 
-async function installRequirement({ name, install }) {
-  log.await(`Checking for ${name}`);
-  if (await foundInPath(name)) {
-    log.success(`${name} found`);
-    return;
+const setupN = async () =>
+  executeShell(`
+    # Ensure folder for n exists
+    [ -d /usr/local/n ] || {
+      echo 'Creating folder for n at /usr/local/n'
+      echo
+      sudo mkdir /usr/local/n
+    }
+
+    # Ensure owner of n is the correct user
+    if [[ "$(stat -f '%Su' /usr/local/n)" != "$(whoami)" ]]; then
+      echo 'Setting '$(whoami)' as owner of /usr/local/n'
+      echo
+      sudo chown "$(whoami)" /usr/local/n
+    fi
+  `);
+
+async function installRequirement({ check, force = false, name, install }) {
+  if (!force) {
+    log.await(`Checking for ${name}`);
+
+    const exists = check == null ? foundInPath(name) : check(name);
+
+    if (await exists) {
+      log.success(`${name} found`);
+      return;
+    }
   }
 
   log.await(`Installing ${name}`);

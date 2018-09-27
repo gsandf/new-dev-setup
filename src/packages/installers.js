@@ -1,4 +1,4 @@
-import execute from '../execute';
+import { execute } from '../execute';
 
 export const brewInstall = (...packages) => async () =>
   execute('brew', ['install', ...packages]);
