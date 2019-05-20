@@ -28,7 +28,7 @@ async function main() {
     { force: true, install: setupN, name: 'n (folder setup)' },
     { install: brewInstall('n'), name: 'n' },
     { install: installNode, name: 'node' },
-    { install: brewInstall('yarn', '--without-node'), name: 'yarn' }
+    { install: brewInstall('yarn', '--ignore-dependencies'), name: 'yarn' }
   ];
 
   // Run in series
