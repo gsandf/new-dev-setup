@@ -1,8 +1,10 @@
 import { brewCaskInstall } from './installers';
+import alreadyInstalled from './alreadyInstalled';
 
-export default [
+export default async () => [
   {
-    checked: true,
+    checked: false,
+    disabled: await alreadyInstalled('Atom'),
     name: 'Atom',
     value: {
       install: brewCaskInstall('atom'),
@@ -11,6 +13,7 @@ export default [
   },
   {
     checked: false,
+    disabled: await alreadyInstalled('Sublime Text'),
     name: 'Sublime Text',
     value: {
       install: brewCaskInstall('sublime-text'),
@@ -19,6 +22,7 @@ export default [
   },
   {
     checked: true,
+    disabled: await alreadyInstalled('Visual Studio Code'),
     name: 'Visual Studio Code',
     value: {
       install: brewCaskInstall('visual-studio-code'),
