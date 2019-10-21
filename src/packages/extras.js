@@ -1,8 +1,11 @@
+import foundInPath from '../foundInPath';
+import alreadyInstalled from './alreadyInstalled';
 import { brewCaskInstall, npmGlobalInstall } from './installers';
 
-export default [
+export default async () => [
   {
-    checked: false,
+    checked: true,
+    disabled: await alreadyInstalled('Insomnia'),
     name: 'Insomnia (https://insomnia.rest)',
     value: {
       install: brewCaskInstall('insomnia'),
@@ -11,6 +14,7 @@ export default [
   },
   {
     checked: false,
+    disabled: await alreadyInstalled('Kitematic (Beta)'),
     name: 'Kitematic (https://kitematic.com)',
     value: {
       install: brewCaskInstall('kitematic'),
@@ -19,6 +23,7 @@ export default [
   },
   {
     checked: false,
+    disabled: await alreadyInstalled('Mojibar'),
     name: 'Mojibar (https://github.com/muan/mojibar)',
     value: {
       install: brewCaskInstall('mojibar'),
@@ -27,6 +32,7 @@ export default [
   },
   {
     checked: false,
+    disabled: await alreadyInstalled('Postman'),
     name: 'Postman (https://www.getpostman.com)',
     value: {
       install: brewCaskInstall('postman'),
@@ -35,6 +41,7 @@ export default [
   },
   {
     checked: false,
+    disabled: await alreadyInstalled('Sequel Pro'),
     name: 'Sequel Pro (https://www.sequelpro.com)',
     value: {
       install: brewCaskInstall('sequel-pro'),
@@ -43,6 +50,7 @@ export default [
   },
   {
     checked: true,
+    disabled: await foundInPath('serve'),
     name: 'serve (https://github.com/zeit/serve)',
     value: {
       install: npmGlobalInstall('serve'),
@@ -51,6 +59,7 @@ export default [
   },
   {
     checked: true,
+    disabled: await alreadyInstalled('Slack'),
     name: 'Slack (https://slack.com/)',
     value: {
       install: brewCaskInstall('slack'),
@@ -59,6 +68,7 @@ export default [
   },
   {
     checked: false,
+    disabled: await alreadyInstalled('Sqlectron'),
     name: 'Sqlectron (https://sqlectron.github.io/)',
     value: {
       install: brewCaskInstall('sqlectron'),

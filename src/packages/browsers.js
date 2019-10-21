@@ -1,8 +1,19 @@
+import alreadyInstalled from './alreadyInstalled';
 import { brewCaskInstall } from './installers';
 
-export default [
+export default async () => [
   {
     checked: true,
+    disabled: await alreadyInstalled('Brave Browser'),
+    name: 'Brave',
+    value: {
+      install: brewCaskInstall('brave-browser'),
+      name: 'Brave'
+    }
+  },
+  {
+    checked: true,
+    disabled: await alreadyInstalled('Firefox'),
     name: 'Firefox',
     value: {
       install: brewCaskInstall('firefox'),
@@ -11,6 +22,7 @@ export default [
   },
   {
     checked: false,
+    disabled: await alreadyInstalled('Firefox Developer Edition'),
     name: 'Firefox Developer Edition',
     value: {
       install: brewCaskInstall('firefox-developer-edition'),
@@ -19,6 +31,7 @@ export default [
   },
   {
     checked: true,
+    disabled: await alreadyInstalled('Google Chrome'),
     name: 'Google Chrome',
     value: {
       install: brewCaskInstall('google-chrome'),
@@ -27,6 +40,7 @@ export default [
   },
   {
     checked: false,
+    disabled: await alreadyInstalled('Google Chrome Canary'),
     name: 'Google Chrome Canary',
     value: {
       install: brewCaskInstall('google-chrome-canary'),

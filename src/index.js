@@ -140,14 +140,12 @@ async function installRequirement({ check, force = false, name, install }) {
 }
 
 async function promptInstallPackages(packageBundles) {
-  const choices = Object.entries(packageBundles).reduce(
-    (allChoices, [name, packages]) => [
-      ...allChoices,
+  const choices = (await Promise.all(
+    Object.entries(packageBundles).flatMap(async ([name, packages]) => [
       new inquirer.Separator('\n' + name.toUpperCase()),
-      ...packages
-    ],
-    []
-  );
+      ...(await packages())
+    ])
+  )).flatMap(section => section);
 
   const answers = await inquirer.prompt([
     {
