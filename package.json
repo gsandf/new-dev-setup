@@ -1,6 +1,6 @@
 {
   "name": "new-dev-setup",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "main": "dist/setup.js",
   "module": "src/index.js",
   "repository": "https://github.com/gsandf/new-dev-setup.git",
