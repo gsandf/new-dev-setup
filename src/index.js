@@ -43,7 +43,7 @@ async function main() {
 
 async function hasBrewCask() {
   try {
-    await execa('brew', ['cask', '--version']);
+    await execa('brew', ['cask', 'help']);
     return true;
   } catch (e) {
     return false;
@@ -126,9 +126,9 @@ async function installRequirement({ check, force = false, name, install }) {
   if (!force) {
     log.await(`Checking for ${name}`);
 
-    const exists = check == null ? foundInPath(name) : check(name);
+    const exists = check == null ? await foundInPath(name) : await check(name);
 
-    if (await exists) {
+    if (exists) {
       log.success(`${name} found`);
       return;
     }
