@@ -91,7 +91,7 @@ async function installHomebrew() {
 
 const installHomebrewCask = async () =>
   executeShell(`
-    echo 'Adding Homebrew Cask (http://caskroom.io/): '
+    echo 'Adding Homebrew Cask (https://formulae.brew.sh/cask/): '
     brew tap caskroom/cask
 
     echo 'Checking for more cask versions: '
