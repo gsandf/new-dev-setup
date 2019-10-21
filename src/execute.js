@@ -21,7 +21,7 @@ function execute(file, args, options) {
  * @returns {Promise} Resolves when command has completed running
  */
 function executeShell(script, options) {
-  const command = execa.shell(script, options);
+  const command = execa(script, { shell: true, ...options });
   command.stdout.pipe(process.stdout);
   command.stderr.pipe(process.stderr);
   return command;
